@@ -39,6 +39,8 @@ export default function App() {
   const [showSymbol, setShowSymbol] = useState(false);
   const [timePeriod, setTimePeriod] = useState('night');
   const [showEnding, setShowEnding] = useState(false);
+  const [showHiddenScreen, setShowHiddenScreen] = useState(false);
+  const [secretMode, setSecretMode] = useState(false);
   const visitHandled = useRef(false);
   const edgeTaps = useRef(0);
   const edgeTimer = useRef(null);
@@ -49,6 +51,7 @@ export default function App() {
   const tapTimer = useRef(null);
   const tapCount = useRef(0);
   const rapidTaps = useRef([]);
+  const edgeTapTimes = useRef([]);
   const lastMotion = useRef(0);
   const stillTimer = useRef(null);
   const pointerStart = useRef(null);
@@ -114,6 +117,12 @@ export default function App() {
   const handleTap = () => {
     const now = Date.now();
     rapidTaps.current = [...rapidTaps.current.filter((time) => now - time < 1800), now];
+    if (rapidTaps.current.length >= 7) {
+      rapidTaps.current = [];
+      setShowHiddenScreen(true);
+      unlock('hidden-screen', 'you were not supposed to find this.', 'glitch');
+      return;
+    }
     if (rapidTaps.current.length >= 4) {
       rapidTaps.current = [];
       setShowSymbol(true);
@@ -159,6 +168,14 @@ export default function App() {
       }
       if (visits >= 3) {
         window.setTimeout(() => unlock('third-visit', 'you came back.', 'returning'), 1800);
+      }
+      if (visits >= 2 && Math.random() < Math.min(0.04 + visits * 0.015, 0.22)) {
+        const rareLines = ['something almost happened.', 'you noticed the pause.', 'this was not here before.', 'a small exception.'];
+        const rareLine = rareLines[Math.floor(Math.random() * rareLines.length)];
+        window.setTimeout(() => {
+          setSecret((current) => current || rareLine);
+          window.setTimeout(() => setSecret((current) => current === rareLine ? '' : current), 2600);
+        }, 5200);
       }
     }
 
@@ -209,6 +226,24 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const hour = new Date().getHours();
+    const minute = new Date().getMinutes();
+    const specialMoment = (hour === 3 && minute < 5) || (hour === 11 && minute === 11) || (hour === 22 && minute === 22);
+    if (!specialMoment) return undefined;
+    const stamp = new Date().toLocaleDateString() + '-' + hour + '-' + minute;
+    try {
+      if (localStorage.getItem('nothing-time-secret-v1') === stamp) return undefined;
+      localStorage.setItem('nothing-time-secret-v1', stamp);
+    } catch { /* storage may be disabled */ }
+    const phrase = hour === 3 ? 'the quietest hour knows.' : hour === 11 ? '11:11 — make no wish.' : '22:22 — you are still here.';
+    const timer = window.setTimeout(() => {
+      setSecret((current) => current || phrase);
+      window.setTimeout(() => setSecret((current) => current === phrase ? '' : current), 3200);
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     if (!visitHandled.current) return;
     try {
       const lastVisit = Number(localStorage.getItem(LAST_VISIT_KEY) || '0');
@@ -254,10 +289,15 @@ export default function App() {
   }, [isAwake]);
 
   const handleSecretTap = () => {
-    edgeTaps.current += 1;
+    const now = Date.now();
+    edgeTapTimes.current = [...edgeTapTimes.current.filter((time) => now - time < 2200), now];
+    edgeTaps.current = edgeTapTimes.current.length;
     clearTimeout(edgeTimer.current);
     edgeTimer.current = window.setTimeout(() => {
-      if (edgeTaps.current >= 3) {
+      if (edgeTaps.current >= 5) {
+        setSecretMode((value) => !value);
+        unlock('secret-mode', 'the rules have changed.', 'glitch');
+      } else if (edgeTaps.current >= 3) {
         setShowArchive((value) => !value);
         unlock('archive', 'nothing remembers.');
       } else {
@@ -265,11 +305,12 @@ export default function App() {
         unlock('edge', 'there was a way in.');
       }
       edgeTaps.current = 0;
-    }, 450);
+      edgeTapTimes.current = [];
+    }, 700);
   };
 
   return (
-    <main className={"nothing-screen mood-" + mood + " time-" + timePeriod + (isAwake ? " mood-awake" : "")} aria-label="nothing">
+    <main className={"nothing-screen mood-" + mood + " time-" + timePeriod + (isAwake ? " mood-awake" : "") + (secretMode ? " secret-mode" : "")} aria-label="nothing">
       <button
         className={"void-button pulse-" + (pulse % 3)}
         type="button"
@@ -294,6 +335,14 @@ export default function App() {
         </button>
       )}
 
+      {showHiddenScreen && (
+        <section className="hidden-room" role="dialog" aria-label="Hidden screen">
+          <div className="hidden-room-mark">∅</div>
+          <div className="hidden-room-title">you were not supposed to find this.</div>
+          <div className="hidden-room-copy">there is no level after this.</div>
+          <button className="ending-close" type="button" onClick={() => setShowHiddenScreen(false)}>return</button>
+        </section>
+      )}
       {showArchive && (
         <section className="archive" role="dialog" aria-label="Levels and achievements">
           <div className="archive-title">nothing found</div>
