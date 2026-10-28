@@ -25,9 +25,12 @@ npm run preview
 
 ## Interactions
 
-- Tap the dot.
-- Double-tap the dot.
+- Tap the dot or double-tap it.
+- Tap the dot four times quickly to reveal a hidden symbol.
 - Press and hold the dot.
+- Drag the dot away from the center.
+- Return for a third visit to trigger another subtle change.
+- Tap the lower-right corner three times to open the secret archive.
 - Stay still and wait.
 - On supported phones, try a gentle shake.
 - There is one other detail near the lower-right edge.
