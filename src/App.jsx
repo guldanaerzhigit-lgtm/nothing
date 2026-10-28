@@ -48,6 +48,7 @@ export default function App() {
   const lastMotion = useRef(0);
   const stillTimer = useRef(null);
   const pointerStart = useRef(null);
+  const isAwake = discoveries.length >= 7;
 
   const unlock = useCallback((id, message, nextMood = 'reveal') => {
     setDiscoveries((current) => {
@@ -182,6 +183,21 @@ export default function App() {
     };
   }, [unlock]);
 
+  useEffect(() => {
+    if (!isAwake) return undefined;
+    let direction = 1;
+    const timer = window.setInterval(() => {
+      setDotPosition((current) => {
+        const nextX = Math.max(-42, Math.min(42, current.x + (Math.random() * 26 + 10) * direction));
+        const nextY = Math.max(-42, Math.min(42, current.y + (Math.random() * 22 - 11)));
+        direction *= -1;
+        return { x: nextX, y: nextY };
+      });
+      setPulse((value) => value + 1);
+    }, 3200);
+    return () => window.clearInterval(timer);
+  }, [isAwake]);
+
   const handleSecretTap = () => {
     edgeTaps.current += 1;
     clearTimeout(edgeTimer.current);
@@ -198,7 +214,7 @@ export default function App() {
   };
 
   return (
-    <main className={"nothing-screen mood-" + mood} aria-label="nothing">
+    <main className={"nothing-screen mood-" + mood + (isAwake ? " mood-awake" : "")} aria-label="nothing">
       <button
         className={"void-button pulse-" + (pulse % 3)}
         type="button"
@@ -212,7 +228,7 @@ export default function App() {
         <span className={"void-dot" + (showSymbol ? " void-dot-symbol" : "")} style={{ "--dot-x": dotPosition.x + "px", "--dot-y": dotPosition.y + "px" }} />
       </button>
       <div className={"whisper " + (secret ? 'whisper-visible' : '')} aria-live="polite">
-        {secret}
+        {secret || (isAwake ? 'you found me.' : '')}
       </div>
       <button className="edge-trigger" type="button" aria-label="A hidden detail" onClick={handleSecretTap}>
         {showMark ? <span className="tiny-mark">·</span> : null}
