@@ -306,7 +306,7 @@ export default function App() {
       }
       edgeTaps.current = 0;
       edgeTapTimes.current = [];
-    }, 700);
+    }, 1100);
   };
 
   return (
