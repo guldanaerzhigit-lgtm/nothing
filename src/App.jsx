@@ -77,6 +77,7 @@ export default function App() {
   const tapTimer = useRef(null);
   const tapCount = useRef(0);
   const rapidTaps = useRef([]);
+  const hiddenTapTimes = useRef([]);
   const edgeTapTimes = useRef([]);
   const lastMotion = useRef(0);
   const stillTimer = useRef(null);
@@ -142,13 +143,15 @@ export default function App() {
 
   const handleTap = () => {
     const now = Date.now();
-    rapidTaps.current = [...rapidTaps.current.filter((time) => now - time < 1800), now];
-    if (rapidTaps.current.length >= 7) {
+    hiddenTapTimes.current = [...hiddenTapTimes.current.filter((time) => now - time < 2500), now];
+    if (hiddenTapTimes.current.length >= 7) {
+      hiddenTapTimes.current = [];
       rapidTaps.current = [];
       setShowHiddenScreen(true);
       unlock('hidden-screen', 'you were not supposed to find this.', 'glitch');
       return;
     }
+    rapidTaps.current = [...rapidTaps.current.filter((time) => now - time < 1800), now];
     if (rapidTaps.current.length >= 4) {
       rapidTaps.current = [];
       setShowSymbol(true);
