@@ -30,9 +30,13 @@ npm run preview
 - Press and hold the dot.
 - Drag the dot away from the center.
 - Return for a third visit to trigger another subtle change.
+- At the final level, the dot may move away from your finger.
+- The atmosphere shifts subtly with local time of day.
+- Return after a while to see a response based on your last discovered action.
+- Find all seven achievements to unlock the secret ending.
 - Tap the lower-right corner three times to open the secret archive with hidden levels and seven achievements.
 - Stay still and wait.
 - On supported phones, try a gentle shake.
 - There is one other detail near the lower-right edge.
 
-Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. At the final level, the dot starts moving on its own and leaves a quiet message. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
+Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. At the final level, the dot starts moving on its own, may evade your finger, and leaves a quiet message. The screen's atmosphere shifts with local time, and after a longer absence it can remember your last discovery. Finding all seven achievements unlocks a secret ending. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
