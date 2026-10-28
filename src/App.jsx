@@ -185,13 +185,10 @@ export default function App() {
 
   useEffect(() => {
     if (!isAwake) return undefined;
-    let direction = 1;
     const timer = window.setInterval(() => {
-      setDotPosition((current) => {
-        const nextX = Math.max(-42, Math.min(42, current.x + (Math.random() * 26 + 10) * direction));
-        const nextY = Math.max(-42, Math.min(42, current.y + (Math.random() * 22 - 11)));
-        direction *= -1;
-        return { x: nextX, y: nextY };
+      setDotPosition({
+        x: Math.round(Math.random() * 70 - 35),
+        y: Math.round(Math.random() * 60 - 30),
       });
       setPulse((value) => value + 1);
     }, 3200);
