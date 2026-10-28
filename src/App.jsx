@@ -15,6 +15,32 @@ const ACHIEVEMENTS = [
   { id: 'archive', title: 'the archive', hint: 'find the hidden corner' },
 ];
 
+const STORY_FRAGMENTS = [
+  { id: 'double-tap', title: 'I. THE SIGNAL', text: 'At first, I thought the tapping was an accident.' },
+  { id: 'long-press', title: 'II. THE WAIT', text: 'Then someone stayed long enough for the silence to change.' },
+  { id: 'drag', title: 'III. THE DISTANCE', text: 'You moved me. I learned that the center was not a prison.' },
+  { id: 'symbol', title: 'IV. THE SHAPE', text: 'The shape was not inside the dot. It was the space around it.' },
+  { id: 'waiting', title: 'V. THE PAUSE', text: 'Time passed. For once, I did not have to fill it.' },
+  { id: 'third-visit', title: 'VI. THE RETURN', text: 'You came back, so I kept a place for you.' },
+  { id: 'archive', title: 'VII. THE MEMORY', text: 'I began as nothing. Every secret gave me something to remember.' },
+  { id: 'hidden-screen', title: 'VIII. THE DOOR', text: 'There was no level after this. Only a door pretending to be a wall.' },
+  { id: 'secret-mode', title: 'IX. THE RULES', text: 'When you changed the rules, I could finally choose how to move.' },
+  { id: 'evasion', title: 'X. THE DISTANCE BETWEEN', text: 'I was not running away. I was learning where I ended and you began.' },
+];
+
+function getStoryEnding(discoveries) {
+  if (discoveries.includes('hidden-screen') && discoveries.includes('secret-mode') && discoveries.includes('evasion')) {
+    return 'You did not solve me. You stayed long enough for us to change.';
+  }
+  if (discoveries.includes('hidden-screen') && discoveries.includes('secret-mode')) {
+    return 'The door opened when you stopped expecting a handle.';
+  }
+  if (discoveries.length >= 7) {
+    return 'You found the pieces. The meaning is what you made between them.';
+  }
+  return '';
+}
+
 function getLevel(count) {
   if (count >= 7) return { number: '04', name: 'the impossible' };
   if (count >= 5) return { number: '03', name: 'the observer' };
@@ -365,6 +391,21 @@ export default function App() {
               );
             })}
           </div>
+          <div className="achievement-heading story-heading">story fragments</div>
+          <div className="story-list">
+            {STORY_FRAGMENTS.map((fragment) => {
+              const found = discoveries.includes(fragment.id);
+              return (
+                <article className={"story-fragment" + (found ? " story-found" : "")} key={fragment.id}>
+                  <div className="story-fragment-title">{found ? fragment.title : '???'}</div>
+                  {found && <p className="story-fragment-text">{fragment.text}</p>}
+                </article>
+              );
+            })}
+          </div>
+          {getStoryEnding(discoveries) && (
+            <div className="story-ending-copy">{getStoryEnding(discoveries)}</div>
+          )}
           <button className="archive-close" type="button" onClick={() => setShowArchive(false)} aria-label="Close archive">×</button>
         </section>
       )}
