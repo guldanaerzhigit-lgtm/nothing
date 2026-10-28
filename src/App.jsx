@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const STORAGE_KEY = 'nothing-discoveries-v1';
+const VISIT_KEY = 'nothing-visits-v1';
 
 function loadDiscoveries() {
   try {
@@ -16,6 +17,9 @@ export default function App() {
   const [discoveries, setDiscoveries] = useState(loadDiscoveries);
   const [showMark, setShowMark] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [dotPosition, setDotPosition] = useState({ x: 0, y: 0 });
+  const [showSymbol, setShowSymbol] = useState(false);
+  const visitHandled = useRef(false);
   const edgeTaps = useRef(0);
   const edgeTimer = useRef(null);
   const [pulse, setPulse] = useState(0);
@@ -45,6 +49,7 @@ export default function App() {
 
   const handlePointerDown = (event) => {
     if (event.button !== undefined && event.button !== 0) return;
+    try { event.currentTarget.setPointerCapture(event.pointerId); } catch { /* optional browser feature */ }
     pressTriggered.current = false;
     pointerStart.current = { x: event.clientX, y: event.clientY };
     pressTimer.current = window.setTimeout(() => {
@@ -59,7 +64,13 @@ export default function App() {
     if (!pointerStart.current) return;
     const dx = event.clientX - pointerStart.current.x;
     const dy = event.clientY - pointerStart.current.y;
-    if (Math.hypot(dx, dy) > 18) clearTimeout(pressTimer.current);
+    if (Math.hypot(dx, dy) > 18) {
+      clearTimeout(pressTimer.current);
+      const x = Math.max(-70, Math.min(70, dx * 0.7));
+      const y = Math.max(-70, Math.min(70, dy * 0.7));
+      setDotPosition({ x, y });
+      if (!discoveries.includes('drag')) unlock('drag', 'you moved it.', 'shift');
+    }
   };
 
   const handlePointerUp = () => {
@@ -94,6 +105,20 @@ export default function App() {
     stillTimer.current = window.setTimeout(() => {
       unlock('waiting', 'you waited.', 'breathe');
     }, 45000);
+
+    if (!visitHandled.current) {
+      visitHandled.current = true;
+      let visits = 0;
+      try {
+        visits = Number(localStorage.getItem(VISIT_KEY) || '0') + 1;
+        localStorage.setItem(VISIT_KEY, String(visits));
+      } catch {
+        visits = 0;
+      }
+      if (visits >= 3) {
+        window.setTimeout(() => unlock('third-visit', 'you came back.', 'returning'), 1800);
+      }
+    }
 
     const onVisibility = () => {
       if (document.visibilityState === 'hidden') {
@@ -158,7 +183,7 @@ export default function App() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
       >
-        <span className="void-dot" />
+        <span className={"void-dot" + (showSymbol ? " void-dot-symbol" : "")} style={{ "--dot-x": dotPosition.x + "px", "--dot-y": dotPosition.y + "px" }} />
       </button>
       <div className={"whisper " + (secret ? 'whisper-visible' : '')} aria-live="polite">
         {secret}
@@ -166,6 +191,12 @@ export default function App() {
       <button className="edge-trigger" type="button" aria-label="A hidden detail" onClick={handleSecretTap}>
         {showMark ? <span className="tiny-mark">·</span> : null}
       </button>
+      {showSymbol && (
+        <button className="symbol-dismiss" type="button" aria-label="Hide discovered symbol" onClick={() => setShowSymbol(false)}>
+          <span className="hidden-symbol" />
+        </button>
+      )}
+
       {showArchive && (
         <div className="archive" role="dialog" aria-label="Discovered secrets">
           <div className="archive-title">nothing found</div>
