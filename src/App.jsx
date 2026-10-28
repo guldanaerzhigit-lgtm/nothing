@@ -3,6 +3,8 @@ import './App.css';
 
 const STORAGE_KEY = 'nothing-discoveries-v1';
 const VISIT_KEY = 'nothing-visits-v1';
+const LAST_ACTION_KEY = 'nothing-last-action-v1';
+const LAST_VISIT_KEY = 'nothing-last-visit-v1';
 const ACHIEVEMENTS = [
   { id: 'double-tap', title: 'first contact', hint: 'tap the dot twice' },
   { id: 'long-press', title: 'patience', hint: 'hold the dot' },
@@ -35,6 +37,8 @@ export default function App() {
   const [showArchive, setShowArchive] = useState(false);
   const [dotPosition, setDotPosition] = useState({ x: 0, y: 0 });
   const [showSymbol, setShowSymbol] = useState(false);
+  const [timePeriod, setTimePeriod] = useState('night');
+  const [showEnding, setShowEnding] = useState(false);
   const visitHandled = useRef(false);
   const edgeTaps = useRef(0);
   const edgeTimer = useRef(null);
@@ -55,6 +59,7 @@ export default function App() {
       if (current.includes(id)) return current;
       const next = [...current, id];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      try { localStorage.setItem(LAST_ACTION_KEY, id); } catch { /* storage may be disabled */ }
       setSecret(message);
       setMood(nextMood);
       window.setTimeout(() => {
@@ -80,6 +85,16 @@ export default function App() {
 
   const handlePointerMove = (event) => {
     if (!pointerStart.current) return;
+    if (isAwake) {
+      const awayX = (window.innerWidth / 2 - event.clientX) * 0.18;
+      const awayY = (window.innerHeight / 2 - event.clientY) * 0.18;
+      setDotPosition({
+        x: Math.max(-68, Math.min(68, awayX)),
+        y: Math.max(-58, Math.min(58, awayY)),
+      });
+      unlock('evasion', 'not that close.', 'glitch');
+      return;
+    }
     const dx = event.clientX - pointerStart.current.x;
     const dy = event.clientY - pointerStart.current.y;
     if (Math.hypot(dx, dy) > 18) {
@@ -184,6 +199,49 @@ export default function App() {
   }, [unlock]);
 
   useEffect(() => {
+    const updateTimePeriod = () => {
+      const hour = new Date().getHours();
+      setTimePeriod(hour >= 5 && hour < 11 ? 'dawn' : hour >= 11 && hour < 17 ? 'day' : hour >= 17 && hour < 21 ? 'dusk' : 'night');
+    };
+    updateTimePeriod();
+    const timer = window.setInterval(updateTimePeriod, 60000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!visitHandled.current) return;
+    try {
+      const lastVisit = Number(localStorage.getItem(LAST_VISIT_KEY) || '0');
+      const now = Date.now();
+      if (lastVisit && now - lastVisit > 60 * 60 * 1000) {
+        const lastAction = localStorage.getItem(LAST_ACTION_KEY);
+        const remembered = {
+          'double-tap': 'you were curious.',
+          'long-press': 'you stayed for a while.',
+          drag: 'you moved me.',
+          symbol: 'you found the shape.',
+          waiting: 'you learned to wait.',
+          archive: 'you opened the archive.',
+          evasion: 'you tried to catch me.',
+        };
+        const message = remembered[lastAction] || 'I remember you.';
+        window.setTimeout(() => {
+          setSecret((current) => current || message);
+          window.setTimeout(() => setSecret((current) => current === message ? '' : current), 2600);
+        }, 900);
+      }
+      localStorage.setItem(LAST_VISIT_KEY, String(now));
+    } catch { /* local storage is optional */ }
+  }, []);
+
+  useEffect(() => {
+    const allFound = ACHIEVEMENTS.every((item) => discoveries.includes(item.id));
+    if (!allFound) return undefined;
+    const timer = window.setTimeout(() => setShowEnding(true), 900);
+    return () => window.clearTimeout(timer);
+  }, [discoveries]);
+
+  useEffect(() => {
     if (!isAwake) return undefined;
     const timer = window.setInterval(() => {
       setDotPosition({
@@ -211,7 +269,7 @@ export default function App() {
   };
 
   return (
-    <main className={"nothing-screen mood-" + mood + (isAwake ? " mood-awake" : "")} aria-label="nothing">
+    <main className={"nothing-screen mood-" + mood + " time-" + timePeriod + (isAwake ? " mood-awake" : "")} aria-label="nothing">
       <button
         className={"void-button pulse-" + (pulse % 3)}
         type="button"
@@ -261,10 +319,18 @@ export default function App() {
           <button className="archive-close" type="button" onClick={() => setShowArchive(false)} aria-label="Close archive">×</button>
         </section>
       )}
-      {discoveries.length > 0 && !showArchive && (
+      {discoveries.length > 0 && !showArchive && !showEnding && (
         <div className="discovery-count" aria-label={discoveries.length + " secrets discovered"}>
           {String(discoveries.length).padStart(2, '0')}
         </div>
+      )}
+      {showEnding && (
+        <section className="secret-ending" role="dialog" aria-label="Secret ending">
+          <div className="ending-symbol">◇</div>
+          <div className="ending-title">nothing was never nothing.</div>
+          <div className="ending-copy">you found every part of me.<br />now let me be.</div>
+          <button className="ending-close" type="button" onClick={() => setShowEnding(false)}>stay here</button>
+        </section>
       )}
     </main>
   );
