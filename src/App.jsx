@@ -96,6 +96,15 @@ export default function App() {
   };
 
   const handleTap = () => {
+    const now = Date.now();
+    rapidTaps.current = [...rapidTaps.current.filter((time) => now - time < 1800), now];
+    if (rapidTaps.current.length >= 4) {
+      rapidTaps.current = [];
+      setShowSymbol(true);
+      setMood('glitch');
+      unlock('symbol', 'there is a shape inside.', 'glitch');
+      window.setTimeout(() => setMood('still'), 1000);
+    }
     if (pressTriggered.current) {
       pressTriggered.current = false;
       return;
