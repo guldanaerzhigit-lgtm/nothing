@@ -35,4 +35,4 @@ npm run preview
 - On supported phones, try a gentle shake.
 - There is one other detail near the lower-right edge.
 
-Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
+Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. At the final level, the dot starts moving on its own and leaves a quiet message. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
