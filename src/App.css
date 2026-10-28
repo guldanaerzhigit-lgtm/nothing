@@ -145,3 +145,17 @@
 .achievement-title { font-size: 9px; letter-spacing: .12em; }
 .achievement-hint { color: rgba(255,255,255,.22); font-size: 8px; letter-spacing: .04em; text-align: right; }
 .achievement-earned .achievement-hint { color: rgba(255,255,255,.35); }
+
+
+/* Final level: the dot no longer stays perfectly still. */
+.mood-awake .void-dot {
+  box-shadow: 0 0 9px rgba(255,255,255,.22), 0 0 24px rgba(255,255,255,.08);
+  transition: translate 1800ms cubic-bezier(.22,.8,.2,1), box-shadow 900ms ease,
+    width 550ms cubic-bezier(.2,.8,.2,1), height 550ms cubic-bezier(.2,.8,.2,1);
+}
+.mood-awake .whisper:not(.whisper-visible) {
+  color: rgba(255,255,255,.28);
+  opacity: 1;
+  transform: translateY(0);
+}
+.mood-awake .discovery-count { color: rgba(255,255,255,.46); }
