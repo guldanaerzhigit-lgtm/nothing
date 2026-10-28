@@ -3,6 +3,22 @@ import './App.css';
 
 const STORAGE_KEY = 'nothing-discoveries-v1';
 const VISIT_KEY = 'nothing-visits-v1';
+const ACHIEVEMENTS = [
+  { id: 'double-tap', title: 'first contact', hint: 'tap the dot twice' },
+  { id: 'long-press', title: 'patience', hint: 'hold the dot' },
+  { id: 'drag', title: 'displacement', hint: 'move the dot' },
+  { id: 'symbol', title: 'hidden shape', hint: 'tap four times quickly' },
+  { id: 'waiting', title: 'stillness', hint: 'wait long enough' },
+  { id: 'third-visit', title: 'returning', hint: 'come back again' },
+  { id: 'archive', title: 'the archive', hint: 'find the hidden corner' },
+];
+
+function getLevel(count) {
+  if (count >= 7) return { number: '04', name: 'the impossible' };
+  if (count >= 5) return { number: '03', name: 'the observer' };
+  if (count >= 3) return { number: '02', name: 'the seeker' };
+  return { number: '01', name: 'the beginning' };
+}
 
 function loadDiscoveries() {
   try {
@@ -28,6 +44,7 @@ export default function App() {
   const pressTriggered = useRef(false);
   const tapTimer = useRef(null);
   const tapCount = useRef(0);
+  const rapidTaps = useRef([]);
   const lastMotion = useRef(0);
   const stillTimer = useRef(null);
   const pointerStart = useRef(null);
@@ -198,12 +215,29 @@ export default function App() {
       )}
 
       {showArchive && (
-        <div className="archive" role="dialog" aria-label="Discovered secrets">
+        <section className="archive" role="dialog" aria-label="Levels and achievements">
           <div className="archive-title">nothing found</div>
-          <div className="archive-progress">{String(discoveries.length).padStart(2, '0')} / 07</div>
+          <div className="archive-level">LEVEL {getLevel(discoveries.length).number}</div>
+          <div className="archive-level-name">{getLevel(discoveries.length).name}</div>
+          <div className="archive-progress">{String(Math.min(discoveries.length, 7)).padStart(2, '0')} / 07</div>
           <div className="archive-line" />
+          <div className="achievement-heading">achievements</div>
+          <div className="achievement-list">
+            {ACHIEVEMENTS.map((item) => {
+              const earned = discoveries.includes(item.id);
+              return (
+                <div className={"achievement" + (earned ? " achievement-earned" : "")} key={item.id}>
+                  <span className="achievement-icon">{earned ? '●' : '○'}</span>
+                  <span className="achievement-copy">
+                    <span className="achievement-title">{earned ? item.title : '???'}</span>
+                    <span className="achievement-hint">{earned ? 'unlocked' : item.hint}</span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
           <button className="archive-close" type="button" onClick={() => setShowArchive(false)} aria-label="Close archive">×</button>
-        </div>
+        </section>
       )}
       {discoveries.length > 0 && !showArchive && (
         <div className="discovery-count" aria-label={discoveries.length + " secrets discovered"}>
