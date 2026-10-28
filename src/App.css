@@ -278,3 +278,35 @@
   .hidden-room, .secret-mode { animation: none !important; }
   .hidden-room-mark { animation: none !important; }
 }
+
+
+.story-heading { margin-top: 25px; }
+.story-list { display: grid; text-align: left; }
+.story-fragment {
+  padding: 12px 0;
+  border-top: 1px solid rgba(255,255,255,.055);
+  color: rgba(255,255,255,.2);
+}
+.story-found { color: rgba(255,255,255,.74); }
+.story-fragment-title {
+  font-size: 8px;
+  letter-spacing: .18em;
+}
+.story-fragment-text {
+  margin: 8px 0 0;
+  color: rgba(255,255,255,.4);
+  font-size: 9px;
+  line-height: 1.9;
+  letter-spacing: .035em;
+}
+.story-ending-copy {
+  margin-top: 18px;
+  padding: 14px 10px;
+  border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.72);
+  font-size: 9px;
+  line-height: 2;
+  letter-spacing: .1em;
+  text-align: center;
+  animation: appear 1.8s ease both;
+}
