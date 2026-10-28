@@ -38,9 +38,9 @@ npm run preview
 - Tap the central dot seven times quickly to enter the hidden room.
 - Rare messages may appear on later visits; their chance rises gradually with visit count.
 - Tap the lower-right corner five times quickly to toggle secret mode (three taps still opens the archive).
-- Tap the lower-right corner three times to open the secret archive with hidden levels and seven achievements.
+- Tap the lower-right corner three times to open the secret archive with hidden levels, achievements, and story fragments.
 - Stay still and wait.
 - On supported phones, try a gentle shake.
 - There is one other detail near the lower-right edge.
 
-Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. At the final level, the dot starts moving on its own, may evade your finger, and leaves a quiet message. The screen's atmosphere shifts with local time, and after a longer absence it can remember your last discovery. Finding all seven achievements unlocks a secret ending. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
+Your level grows as you discover secrets: the beginning → the seeker → the observer → the impossible. At the final level, the dot starts moving on its own, may evade your finger, and leaves a quiet message. The screen's atmosphere shifts with local time, and after a longer absence it can remember your last discovery. Finding all seven achievements unlocks a secret ending. The archive now reveals a story fragment for each meaningful action; the final lines depend on which hidden paths you discover. The archive tracks seven achievements and keeps undiscovered ones hidden. Progress is stored locally in your browser; no account or backend is required.
