@@ -15,6 +15,9 @@ export default function App() {
   const [mood, setMood] = useState('still');
   const [discoveries, setDiscoveries] = useState(loadDiscoveries);
   const [showMark, setShowMark] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  const edgeTaps = useRef(0);
+  const edgeTimer = useRef(null);
   const [pulse, setPulse] = useState(0);
   const [secret, setSecret] = useState('');
   const pressTimer = useRef(null);
@@ -122,14 +125,25 @@ export default function App() {
       clearTimeout(pressTimer.current);
       clearTimeout(tapTimer.current);
       clearTimeout(stillTimer.current);
+      clearTimeout(edgeTimer.current);
       window.removeEventListener('devicemotion', onMotion);
       document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [unlock]);
 
   const handleSecretTap = () => {
-    setShowMark((value) => !value);
-    if (!discoveries.includes('edge')) unlock('edge', 'there was a way in.');
+    edgeTaps.current += 1;
+    clearTimeout(edgeTimer.current);
+    edgeTimer.current = window.setTimeout(() => {
+      if (edgeTaps.current >= 3) {
+        setShowArchive((value) => !value);
+        unlock('archive', 'nothing remembers.');
+      } else {
+        setShowMark((value) => !value);
+        unlock('edge', 'there was a way in.');
+      }
+      edgeTaps.current = 0;
+    }, 450);
   };
 
   return (
@@ -152,7 +166,15 @@ export default function App() {
       <button className="edge-trigger" type="button" aria-label="A hidden detail" onClick={handleSecretTap}>
         {showMark ? <span className="tiny-mark">·</span> : null}
       </button>
-      {discoveries.length > 0 && (
+      {showArchive && (
+        <div className="archive" role="dialog" aria-label="Discovered secrets">
+          <div className="archive-title">nothing found</div>
+          <div className="archive-progress">{String(discoveries.length).padStart(2, '0')} / 07</div>
+          <div className="archive-line" />
+          <button className="archive-close" type="button" onClick={() => setShowArchive(false)} aria-label="Close archive">×</button>
+        </div>
+      )}
+      {discoveries.length > 0 && !showArchive && (
         <div className="discovery-count" aria-label={discoveries.length + " secrets discovered"}>
           {String(discoveries.length).padStart(2, '0')}
         </div>
