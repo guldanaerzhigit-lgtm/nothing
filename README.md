@@ -34,6 +34,10 @@ npm run preview
 - The atmosphere shifts subtly with local time of day.
 - Return after a while to see a response based on your last discovered action.
 - Find all seven achievements to unlock the secret ending.
+- Check the app at 03:00, 11:11, or 22:22 for time-window messages.
+- Tap the central dot seven times quickly to enter the hidden room.
+- Rare messages may appear on later visits; their chance rises gradually with visit count.
+- Tap the lower-right corner five times quickly to toggle secret mode (three taps still opens the archive).
 - Tap the lower-right corner three times to open the secret archive with hidden levels and seven achievements.
 - Stay still and wait.
 - On supported phones, try a gentle shake.
