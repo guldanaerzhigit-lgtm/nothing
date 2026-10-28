@@ -89,3 +89,13 @@
   font-weight: 300;
   cursor: pointer;
 }
+
+
+.void-dot { translate: var(--dot-x, 0px) var(--dot-y, 0px); }
+.mood-glitch .void-dot { width: 7px; height: 7px; border-radius: 1px; box-shadow: 0 0 18px rgba(255,255,255,.3); animation: glitch-flicker 900ms steps(2,end) both; }
+.mood-returning .void-dot { animation: return-pulse 2.2s ease-in-out 3; }
+.void-dot-symbol { width: 9px; height: 9px; border-radius: 0; transform: rotate(45deg); box-shadow: 0 0 0 1px rgba(255,255,255,.32), 0 0 18px rgba(255,255,255,.24); }
+.symbol-dismiss { position: absolute; z-index: 2; display: grid; width: 64px; height: 64px; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.hidden-symbol { display: block; width: 18px; height: 18px; border: 1px solid rgba(255,255,255,.62); transform: rotate(45deg); animation: appear 900ms ease both; }
+@keyframes glitch-flicker { 0%,100% { opacity: 1; transform: translateX(0); } 25% { opacity: .2; transform: translateX(-2px); } 50% { opacity: 1; transform: translateX(2px); } 75% { opacity: .45; transform: translateX(-1px); } }
+@keyframes return-pulse { 0%,100% { transform: scale(1); opacity: .72; } 50% { transform: scale(1.8); opacity: 1; box-shadow: 0 0 20px rgba(255,255,255,.3); } }
